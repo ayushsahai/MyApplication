@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="TestParse">Click to add load to the server</string>
+</resources>
