@@ -5,16 +5,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btn;
+    private TextView tv;
+    private Button getDataButton;
+    private String allKickBoxers;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -44,6 +53,41 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     FancyToast.makeText(MainActivity.this, e.getMessage(), FancyToast.LENGTH_LONG, FancyToast.ERROR, true).show();
                 }
+            }
+        });
+        tv = findViewById(R.id.textView);
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("KickBoxer");
+                parseQuery.getInBackground("UAphLOPxzM", new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                        tv.setText("Name is "+object.get("name") + ". and Punch speed id " + object.get("KickSpeed"));
+                    }
+                });
+            }
+        });
+        getDataButton = findViewById(R.id.btnGetData);
+        getDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                allKickBoxers = "";
+                ParseQuery<ParseObject> queryAll = ParseQuery.getQuery("KickBoxer");
+                queryAll.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if(e==null){
+                            if(objects.size()>0){
+                                for(ParseObject kickboxer : objects){
+                                    allKickBoxers=allKickBoxers+kickboxer.get("name")+"\n";
+                                    FancyToast.makeText(MainActivity.this, allKickBoxers, FancyToast.LENGTH_LONG, FancyToast.SUCCESS, true).show();
+
+                                }
+                            }
+                        }
+                    }
+                });
             }
         });
     }
